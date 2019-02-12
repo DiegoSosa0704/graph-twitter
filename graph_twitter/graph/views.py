@@ -71,7 +71,6 @@ def search_tweet_geocode(request):
 
     except Exception as e:
         return Response({"detail": e.args}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    map_twitter.campaign_id = campaign_id
     map_twitter.search_tweet(q=keyword, lang=lang, count=count, geocode=geocode)
     return Response({'detail': 'keyword search completed'}, status.HTTP_200_OK)
 

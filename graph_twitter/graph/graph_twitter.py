@@ -62,7 +62,7 @@ class GraphTwitter(object):
     def search_tweet(self, **kwargs):
         search_result = self.api.search(**kwargs, tweet_mode='extended')
         try:
-            self.key_research_init(**kwargs)
+            # self.key_research_init(**kwargs)
             print("TOTAL DE RESULTADOS", len(search_result))
             for index, tweet_obj in enumerate(search_result):
                 self.graph_tweet(tweet_obj)

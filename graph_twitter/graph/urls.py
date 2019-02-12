@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     re_path(r'^get_data_tweet/(?P<tweet_id>[-\w]+)', views.get_data_tweet, name='get_data_tweet'),
     path('search_tweet_keyword/', views.search_tweet_keyword, name='search_tweet_keyword'),
+    path('search_tweet_geocode/', views.search_tweet_geocode, name='search_tweet_geocode'),
     path('init_trends_search/', views.trends_search_init, name='init_trends_search'),
     path('user_timeline_search_init/', views.user_timeline_search_init, name='user_timeline_search_init'),
     re_path(r'^get_trends_search/(?P<woeid>[-\w]+)', views.get_trends_search, name='get_trends_search'),
