@@ -124,12 +124,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # Credentials AWS
-ACCESS_ID = 'AKIAJRIW35C6SG2PIQWQ'
-ACCESS_KEY = 'Sb1qncp0r6N1JcS/g0bLOk+lmmLPiaa2dXVX10SR'
+ACCESS_ID = 'AKIAJ42URNWFXTMQJ3NQ'
+ACCESS_KEY = 'nzHMl6coJAKaLHsiw2rb5vdZbgpL7ELTkQHOX8oX'
 
-# EC2_PUBLIC_DNS = '18.233.227.169'
-EC2_PUBLIC_DNS = 'localhost'
+# EC2_PUBLIC_DNS = '127.0.0.1'
+EC2_PUBLIC_DNS = '54.156.11.86'
 USER_DB_GRAPH = "neo4j"
+# PASSWORD_DB_GRAPH = "graphtwitter"
 PASSWORD_DB_GRAPH = "graphtwitter"
 
 # Twitter

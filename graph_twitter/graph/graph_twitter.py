@@ -8,6 +8,7 @@ from rest_framework import status
 
 from database.database import DataBase
 from graph_twitter.settings import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET
+from utils.utils_aws import ConnectAWSServices
 
 
 class GraphTwitter(object):
@@ -19,6 +20,8 @@ class GraphTwitter(object):
         self.db_neo4j = None
         self.id_research = None
         self.last_tweet_id = None
+        self.aws_services = ConnectAWSServices()
+        self.aws_services.connect_comprehend()
 
     def connect_api_twitter(self):
         if self.api is None:
@@ -150,6 +153,7 @@ class GraphTwitter(object):
         self.get_user_twitter_mentioned(tweet_obj, prop_tweet, prop_user_tweet)
         self.get_link(tweet_obj, prop_tweet)
         self.get_hashtag(tweet_obj, prop_tweet)
+        self.graph_tweet_comprehend(tweet_obj)
         if self.id_research is not None:
             props_twitter_key_research = self.db_neo4j.structure_data(
                 dict(id_research=self.id_research))
@@ -396,6 +400,14 @@ class GraphTwitter(object):
         self.db_neo4j.create_relationship(labelA='tweet', propertiesA=props_tweet, labelB='tweet',
                                           propertiesB=props_reply, direction='R', label='reply_of')
 
+    def relation_tweet_sentiment(self, props_tweet, props_sentiment):
+        self.db_neo4j.create_relationship(labelA='tweet', propertiesA=props_tweet, labelB='sentiment',
+                                          propertiesB=props_sentiment, direction='R', label='detects')
+
+    def relation_tweet_entity(self, props_tweet, props_entity):
+        self.db_neo4j.create_relationship(labelA='tweet', propertiesA=props_tweet, labelB='entity',
+                                          propertiesB=props_entity, direction='R', label='detects')
+
     def clean_text(self, text):
         return re.sub(r'[^a-zA-ZñáéíóúÁÉÍÓÚ0-9\s]', r'', text)
 
@@ -410,3 +422,27 @@ class GraphTwitter(object):
         date_str = date_str
         time_struct = time.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")  # Tue Apr 26 08:57:55 +0000 2011
         return datetime.fromtimestamp(time.mktime(time_struct))
+
+    def graph_tweet_comprehend(self, tweet_obj):
+        # tweet = self.db_neo4j.get_data_tweet(tweet_id)
+        text = tweet_obj.full_text
+        # Sentiment
+        sentiment = self.aws_services.comprehend_detect_sentiment(text=text, language_code="es")
+        props_sentiment = dict(
+            text=sentiment.get('Sentiment')
+        )
+        props_sentiment = self.db_neo4j.structure_data(props_sentiment)
+        self.db_neo4j.create_node('sentiment', props_sentiment)
+        props_tweet = self.db_neo4j.structure_data(dict(id=tweet_obj.id))
+        self.relation_tweet_sentiment(props_tweet, props_sentiment)
+        # Entities
+        entities = self.aws_services.comprehend_detect_entities(text=text, language_code="es").get('Entities')
+        for entity in entities:
+            props_entity = dict(
+                text=entity.get('Text'),
+                type=entity.get('Type'),
+                score=entity.get('Score')
+            )
+            props_entity = self.db_neo4j.structure_data(props_entity)
+            self.db_neo4j.create_node('entity', props_entity)
+            self.relation_tweet_entity(props_tweet, props_entity)

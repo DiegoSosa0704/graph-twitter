@@ -1,3 +1,4 @@
+"""
 import tweepy
 
 CONSUMER_KEY = 'sjvZbJFS3Mxo1BUHTxENX8nos'
@@ -13,3 +14,17 @@ api = tweepy.API(auth)
 
 search_result = api.search(q='Venezuela', count=2, tweet_mode='extended', geocode='5.533,-73.367,10km')
 print(search_result)
+"""
+
+import requests
+
+payload = {
+    "keyword": "Venezuela",
+    "lang": "es",
+    "count": 1,
+    "geocode": "5.533,-73.367,15km"
+}
+
+r = requests.post('http://127.0.0.1:8000/api/v1/search_tweet_geocode/', data=payload)
+print(r.text)
+print(r.status_code)

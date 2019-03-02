@@ -14,6 +14,27 @@ class ConnectAWSServices(object):
         self.dynamodb_client = None
         self.lambda_client = None
         self.cloud_watch_event_client = None
+        self.comprehend = None
+
+    def  connect_comprehend(self):
+        try:
+            self.comprehend = boto3.client(service_name='comprehend', region_name='us-east-1',
+                                           aws_access_key_id=ACCESS_ID,
+                                           aws_secret_access_key=ACCESS_KEY)
+        except Exception:
+            raise Exception('Failed to establish connection with aws', status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def comprehend_detect_sentiment(self, text, language_code):
+        if self.comprehend:
+            return self.comprehend.detect_sentiment(Text=text, LanguageCode=language_code)
+        else:
+            raise Exception('Failed to establish connection with aws', status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def comprehend_detect_entities(self, text, language_code):
+        if self.comprehend:
+            return self.comprehend.detect_entities(Text=text, LanguageCode=language_code)
+        else:
+            raise Exception('Failed to establish connection with aws', status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def lambda_resource(self):
         try:
