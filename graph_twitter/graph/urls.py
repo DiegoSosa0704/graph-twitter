@@ -23,4 +23,6 @@ urlpatterns = [
     path('aws/create_rule', views.create_rule, name='create_rule'),
     path('twitter/user/tweet/most_reweeted/<str:screen_name>', views.get_tweet_more_retweeted,
          name='get_tweet_more_retweeted'),
+    path('twitter/create_campaign/', views.create_campaign,
+         name='create_campaign'),
 ]
