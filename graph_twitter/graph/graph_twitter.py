@@ -65,7 +65,7 @@ class GraphTwitter(object):
     def search_tweet(self, **kwargs):
         search_result = self.api.search(**kwargs, tweet_mode='extended')
         try:
-            # self.key_research_init(**kwargs)
+            self.key_research_init(**kwargs)
             print("TOTAL DE RESULTADOS", len(search_result))
             for index, tweet_obj in enumerate(search_result):
                 self.graph_tweet(tweet_obj)
@@ -74,10 +74,12 @@ class GraphTwitter(object):
             raise e
 
     def key_research_init(self, **kwargs):
-        self.id_research = str(uuid.uuid4())
+        self.id_research = kwargs.get('q')
+        # props_twitter_key_research = self.db_neo4j.structure_data(
+        #     dict(id_research=self.id_research, key_research=kwargs.get('q')))
         props_twitter_key_research = self.db_neo4j.structure_data(
-            dict(id_research=self.id_research, key_research=kwargs.get('q')))
-        props_campaign = self.db_neo4j.structure_data(dict(nosql_id=self.campaign_id))
+            dict(key_research=self.id_research))
+        props_campaign = self.db_neo4j.structure_data(dict(campaign_id=kwargs.get('campaign_id')))
         self.db_neo4j.create_node('twitter_key_research', props_twitter_key_research)
         self.relation_campaign_twitter_key_research(props_campaign, props_twitter_key_research)
 
@@ -156,7 +158,7 @@ class GraphTwitter(object):
         self.graph_tweet_comprehend(tweet_obj)
         if self.id_research is not None:
             props_twitter_key_research = self.db_neo4j.structure_data(
-                dict(id_research=self.id_research))
+                dict(key_research=self.id_research))
             self.relation_tweet_twitter_key_research(prop_tweet, props_twitter_key_research)
         # if self.screen_name is not None:
         #     props_twitter_profile = self.db_neo4j.structure_data(dict(url='https://twitter.com/' + self.screen_name))

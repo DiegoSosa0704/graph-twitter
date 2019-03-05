@@ -1,3 +1,4 @@
+import uuid
 from operator import itemgetter
 
 from rest_framework import status
@@ -62,16 +63,16 @@ def search_tweet_geocode(request):
         lang = request.data['lang']
         count = request.data['count']
         geocode = request.data['geocode']
+        campaign_id = request.data['campaign_id']
     except KeyError as e:
         return Response({"detail": "Requires key " + e.__str__()}, status=status.HTTP_400_BAD_REQUEST)
     try:
         map_twitter = GraphTwitter()
         map_twitter.connect_api_twitter()
         map_twitter.connect_neo4j_database()
-
     except Exception as e:
         return Response({"detail": e.args}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    map_twitter.search_tweet(q=keyword, lang=lang, count=count, geocode=geocode)
+    map_twitter.search_tweet(q=keyword, lang=lang, count=count, geocode=geocode, campaign_id=campaign_id)
     return Response({'detail': 'keyword search completed'}, status.HTTP_200_OK)
 
 
@@ -236,3 +237,14 @@ def get_tweet_more_retweeted(request, screen_name):
     return Response(result_query, status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def create_campaign(request):
+    try:
+        database = DataBase()
+    except Exception:
+        return Response({"detail": "Failed to establish connection with neo4j"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    props = dict(campaign_id=str(uuid.uuid4()), name="Campaña para analizar opiniones en twitter")
+    props = database.structure_data(props)
+    database.create_node('campaign', props)
+    return Response({"message": "Nodo creado"}, status.HTTP_200_OK)
