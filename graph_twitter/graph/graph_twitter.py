@@ -74,6 +74,7 @@ class GraphTwitter(object):
             raise e
 
     def key_research_init(self, **kwargs):
+        self.connect_neo4j_database()
         self.id_research = kwargs.get('q')
         # props_twitter_key_research = self.db_neo4j.structure_data(
         #     dict(id_research=self.id_research, key_research=kwargs.get('q')))
@@ -82,6 +83,7 @@ class GraphTwitter(object):
         props_campaign = self.db_neo4j.structure_data(dict(campaign_id=kwargs.get('campaign_id')))
         self.db_neo4j.create_node('twitter_key_research', props_twitter_key_research)
         self.relation_campaign_twitter_key_research(props_campaign, props_twitter_key_research)
+        self.close_database()
 
     def get_trends(self, **kwargs):
         trends = self.api.trends_place(**kwargs)
