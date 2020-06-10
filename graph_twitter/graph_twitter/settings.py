@@ -124,8 +124,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # Credentials AWS
-ACCESS_ID = 'AKIAJ42URNWFXTMQJ3NQ'
-ACCESS_KEY = 'nzHMl6coJAKaLHsiw2rb5vdZbgpL7ELTkQHOX8oX'
+ACCESS_ID = ''
+ACCESS_KEY = ''
 
 # EC2_PUBLIC_DNS = '127.0.0.1'
 EC2_PUBLIC_DNS = '10.4.44.114'
